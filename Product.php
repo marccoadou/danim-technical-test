@@ -2,14 +2,13 @@
 
 class Product
 {
-	private $id, $price, $type, $is_discountable;
+	private $id, $price, $type;
 
-	public function __construct(int $price, ProductTypeEnum $type, bool $is_discountable = false)
+	public function __construct(int $price, $type)
 	{
 		$this->id = uniqid();
 		$this->type = $type;
 		$this->price = $price;
-		$this->is_discountable = $is_discountable;
 	}
 
 	public function setPrice(float $price): void
@@ -20,5 +19,15 @@ class Product
 	public function getPrice(): float
 	{
 		return $this->price;
+	}
+
+	public function setType(float $type): void
+	{
+		$this->type = $type;
+	}
+
+	public function getType(): int
+	{
+		return $this->type;
 	}
 }
