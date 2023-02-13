@@ -61,7 +61,7 @@ class Basket
 	public function getTotalAmountWithCouponReduction(Coupon $coupon): float
 	{
 		if ($coupon->isValid($this)) {
-			return $coupon->calculateDiscount($this);
+			return $coupon->calculateDiscountForBasket($this);
 		} else {
 			throw new Exception("Invalid coupon for this basket");
 		}

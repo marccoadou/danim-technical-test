@@ -57,7 +57,7 @@ class Coupon
 		return false;
 	}
 
-	public function calculateDiscount(Basket $basket): float
+	public function calculateDiscountForBasket(Basket $basket): float
 	{
 		$discounted_price = $basket->getTotalAmount();
 
