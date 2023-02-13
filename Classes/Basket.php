@@ -1,8 +1,12 @@
 <?php
 
+namespace Classes;
+
+use Exception;
+
 class Basket
 {
-	private $id, $total_amount, $products;
+	public $id, $total_amount, $products;
 
 	public function __construct(Product $product)
 	{
