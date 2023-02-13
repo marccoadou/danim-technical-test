@@ -3,6 +3,10 @@
 namespace Classes;
 
 use Exception;
+use Classes\Coupon;
+use Classes\Product;
+use Events\Basket\BasketAddedProduct;
+use Events\Basket\BasketRemovedProduct;
 
 class Basket
 {
@@ -16,15 +20,25 @@ class Basket
 		$this->total_amount = 0;
 	}
 
-	public function addProduct(Product $product): void
+	public function addProduct(Product $product): array
 	{
-		array_push($this->products, $product);
+		return [new BasketAddedProduct($this, $product)];
+	}
+
+	public function onBasketAddedProduct(BasketAddedProduct $event): void
+	{
+		array_push($this->products, $event->getProduct());
 		$this->total_amount = self::calculateTotalAmount();
 	}
 
-	public function removeProduct(Product $product): void
+	public function removeProduct(Product $product): array
 	{
-		$index = array_search($product, $this->products, true);
+		return [new BasketRemovedProduct($this, $product)];
+	}
+
+	public function onBasketRemovedProduct(BasketRemovedProduct $event): void
+	{
+		$index = array_search($event->getProduct(), $this->products, true);
 		if ($index !== false) {
 			unset($this->products[$index]);
 			$this->total_amount = self::calculateTotalAmount();
@@ -37,6 +51,8 @@ class Basket
 	{
 		return $this->id;
 	}
+
+
 
 	public function getProducts(): array
 	{

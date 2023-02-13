@@ -42,10 +42,17 @@ class Coupon
 	public function use(Basket $basket)
 	{
 		if ($this->isValid($basket)) {
-			return new CouponWasUsedOnBasket($this->id, $basket->id);
+			return new CouponWasUsedOnBasket($this, $basket);
 		} 			// this should have more depth to it, as in different errors for each problem: total amount, time limit, usages
 		throw new Exception("Coupon is invalid");
 	}
+
+
+	public function onCouponUse(CouponWasUsedOnBasket $event)
+	{
+		// I guess log the usage?
+	}
+
 
 	public function getCouponUsages(): int
 	{

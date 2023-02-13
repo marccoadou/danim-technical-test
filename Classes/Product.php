@@ -20,6 +20,11 @@ class Product
 		return [new ProductChangedPrice($this, $price)];
 	}
 
+	public function onProductChangedPrice(ProductChangedPrice $event)
+	{
+		$this->price = $event->getPrice();
+	}
+
 	public function getPrice(): float
 	{
 		return $this->price;
