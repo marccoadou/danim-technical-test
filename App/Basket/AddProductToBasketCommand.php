@@ -8,7 +8,7 @@ require_once('./App/Command/CommandInterface.php');
 use App\Product\Product;
 use App\Command\CommandInterface;
 
-class CreateBasketCommand implements CommandInterface
+class AddProductToBasket implements CommandInterface
 {
     public $product;
 

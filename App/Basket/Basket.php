@@ -2,9 +2,12 @@
 
 namespace App\Basket;
 
-use Exception;
-use App\Coupon\Coupon;
 use App\Product\Product;
+use App\Product\ProductRepository;
+
+require('./App/Product/ProductRepository.php');
+
+
 
 class Basket
 {
@@ -13,15 +16,16 @@ class Basket
     public function __construct(Product $product)
     {
         $this->id = uniqid();
-        $this->products = array();
-        // $this->addProduct($product);
+        $this->products = new ProductRepository();
+        $this->products->save($product);
         $this->total_amount = 0;
     }
 
-    // public function addProduct(Product $product): array
-    // {
-    //     return [new BasketAddedProduct($this, $product)];
-    // }
+    public function addProduct(Product $product): array
+    {
+        return [];
+        // return [new AddProductToBasket($product)];
+    }
 
     // public function onBasketAddedProduct(BasketAddedProduct $event): void
     // {
@@ -50,7 +54,7 @@ class Basket
         return $this->id;
     }
 
-    public function getProducts(): array
+    public function getProducts()
     {
         return $this->products;
     }

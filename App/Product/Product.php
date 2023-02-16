@@ -4,7 +4,7 @@ namespace App\Product;
 
 class Product
 {
-    private $id, $price;
+    public $id, $price;
 
     public function __construct(float $price)
     {

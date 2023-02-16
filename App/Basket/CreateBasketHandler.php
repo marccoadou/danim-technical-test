@@ -29,6 +29,7 @@ class CreateBasketHandler implements CommandHandlerInterface
         }
 
         $basket = new Basket($command->getProduct());
-        $this->basketRepository->create($basket);
+        $this->basketRepository->save($basket);
+        return $basket;
     }
 }

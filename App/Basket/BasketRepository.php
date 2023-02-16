@@ -10,9 +10,13 @@ class BasketRepository implements BasketRepositoryInterface
 {
     public $baskets = [];
 
-    public function create(Basket $basket)
+    public function save(Basket $basket)
     {
-        array_push($this->baskets, $basket);
-        echo "Basket with id {$basket->id} was created." . PHP_EOL;
+        $this->baskets[$basket->id] = $basket;
+    }
+
+    public function find(string $id): ?Basket
+    {
+        return $this->baskets[$id] ?? null;
     }
 }
