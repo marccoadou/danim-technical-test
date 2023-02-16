@@ -1,9 +1,8 @@
 <?php
 
-namespace Events\Product;
+namespace Src\Events\Product;
 
-use Classes\Product;
-
+use Src\Classes\Product;
 
 class ProductChangedPrice
 {

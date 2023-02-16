@@ -1,21 +1,29 @@
 <?php
 
-namespace Classes;
+namespace Src\Classes;
 
 use Exception;
-use Classes\Coupon;
-use Classes\Product;
-use Events\Basket\BasketAddedProduct;
-use Events\Basket\BasketRemovedProduct;
+use Src\Classes\Coupon;
+use Src\Classes\Product;
+use Src\Events\Basket\BasketAddedProduct;
+use Src\Events\Basket\BasketRemovedProduct;
+use Ecotone\Modelling\WithAggregateVersioning;
+use Ecotone\Modelling\Attribute\CommandHandler;
+use Ecotone\Modelling\Attribute\AggregateIdentifier;
+use Ecotone\Modelling\Attribute\EventSourcingHandler;
+use Ecotone\Modelling\Attribute\EventSourcingAggregate;
+
+
 
 class Basket
 {
-	public $id, $total_amount, $products;
+	private $id, $total_amount, $products;
 
 	public function __construct(Product $product)
 	{
 		$this->id = uniqid();
 		$this->products = array();
+		// array_push($this->products, $product); 
 		$this->addProduct($product);
 		$this->total_amount = 0;
 	}
@@ -52,8 +60,6 @@ class Basket
 		return $this->id;
 	}
 
-
-
 	public function getProducts(): array
 	{
 		return $this->products;
@@ -61,7 +67,7 @@ class Basket
 
 	public function getTotalAmount(): float
 	{
-		return $this->total_amount;
+		return $this->calculateTotalAmount();
 	}
 
 	public function setTotalAmount(float $total_amount): void
@@ -80,10 +86,10 @@ class Basket
 
 	public function getTotalAmountWithCouponReduction(Coupon $coupon): float
 	{
-		if ($coupon->isValid($this)) {
-			return $coupon->calculateDiscountForBasket($this);
-		} else {
-			throw new Exception("Invalid coupon for this basket");
-		}
+		// if ($coupon->isValid($this)) {
+		return $coupon->calculateDiscountForBasket($this);
+		// } else {
+		// throw new Exception("Invalid coupon for this basket");
+		// }
 	}
 }

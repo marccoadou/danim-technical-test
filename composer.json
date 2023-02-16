@@ -1,0 +1,13 @@
+{
+  "autoload": {
+    "classmap": [
+      "Src"
+    ]
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10"
+  },
+  "require": {
+    "ecotone/lite-application": "^1.73"
+  }
+}

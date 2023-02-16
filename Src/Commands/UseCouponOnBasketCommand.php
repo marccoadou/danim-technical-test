@@ -1,12 +1,9 @@
 <?php
 
+use Src\Classes\Basket;
+use Src\Classes\Coupon;
 
-namespace Events\Coupon;
-
-use Classes\Basket;
-use Classes\Coupon;
-
-class CouponWasUsedOnBasket
+class UseCouponOnBasketCommand
 {
     private $coupon, $basket;
 

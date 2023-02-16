@@ -1,9 +1,9 @@
 <?php
 
-namespace Events\Basket;
+namespace Src\Events\Basket;
 
-use Classes\Basket;
-use Classes\Product;
+use Src\Classes\Basket;
+use Src\Classes\Product;
 
 
 class BasketRemovedProduct

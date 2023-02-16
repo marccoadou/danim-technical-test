@@ -1,15 +1,17 @@
 <?php
 
-namespace Classes;
+namespace Src\Classes;
 
-use Events\Product\ProductChangedPrice;
-
+use Src\Events\Product\ProductChangedPrice;
+use Ecotone\Modelling\Attribute\CommandHandler;
+use Ecotone\Modelling\Attribute\EventSourcingHandler;
+use Ecotone\Modelling\Attribute\EventSourcingAggregate;
 
 class Product
 {
 	private $id, $price;
 
-	public function __construct(int $price)
+	public function __construct(float $price)
 	{
 		$this->id = uniqid();
 		$this->price = $price;

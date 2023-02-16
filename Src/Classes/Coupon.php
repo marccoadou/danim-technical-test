@@ -1,20 +1,19 @@
 <?php
 
-namespace Classes;
+namespace Src\Classes;
 
 use DateTime;
 use Exception;
 use DateInterval;
-use Classes\Basket;
-use CouponUniqueCodeChanged;
-use Events\Coupon\CouponWasUsedOnBasket;
+use Src\Classes\Basket;
+use Src\Enum\CouponDiscountTypeEnum;
+use Src\Events\Coupon\CouponWasUsedOnBasket;
+use Src\Events\Coupon\CouponUniqueCodeChanged;
 
 
 class Coupon
 {
 	const MINIMUM_AMOUNT = 50;
-	const DISCOUNT_TYPE_PERCENTAGE = 0;
-	const DISCOUNT_TYPE_FIXED = 1;
 
 	private $id, $unique_code, $discount, $discount_type, $creation_date, $usages, $is_revoked;
 
@@ -23,10 +22,11 @@ class Coupon
 		if ($discount < 0) {
 			throw new \InvalidArgumentException("Discount can not be negative or null");
 		}
-		if (!in_array($discount_type, [self::DISCOUNT_TYPE_FIXED, self::DISCOUNT_TYPE_PERCENTAGE])) {
+		if (!in_array($discount_type, [0, 1])) {
 			throw new \InvalidArgumentException("Discount should be either PERCENTAGE or FIXED");
 		}
-		if (!($unique_code instanceof string)) {
+
+		if (!is_string($unique_code)) {
 			throw new \InvalidArgumentException("unique_code must be string");
 		}
 
@@ -42,21 +42,19 @@ class Coupon
 	public function use(Basket $basket)
 	{
 		if ($this->isValid($basket)) {
-			return new CouponWasUsedOnBasket($this, $basket);
+			return [new CouponWasUsedOnBasket($this, $basket)];
 		} 			// this should have more depth to it, as in different errors for each problem: total amount, time limit, usages
 		throw new Exception("Coupon is invalid");
 	}
-
 
 	public function onCouponUse(CouponWasUsedOnBasket $event)
 	{
 		// I guess log the usage?
 	}
 
-
 	public function getCouponUsages(): int
 	{
-		return $this->usages;
+		return $this->usages; // this should return a query with every usage logged in DB
 	}
 
 	public function getCreationDate(): DateTime
@@ -66,12 +64,12 @@ class Coupon
 
 	private function isTimeValid(): bool
 	{
-		$creation = $this->creation_date; // here I assume this is a deep copy, I'm not actually sure if php does it like this anymore or I should clone?
-		$creation->add(new DateInterval('2M'));
-		$now = new DateTime('now');
-		if ($creation > $now) {
-			return false;
-		};
+		// $creation = $this->creation_date; // here I assume this is a deep copy, I'm not actually sure if php does it like this anymore or I should clone?
+		// $creation->add(new DateInterval('2M'));
+		// $now = new DateTime('now');
+		// if ($creation > $now) {
+		// 	return false;
+		// };
 		return true;
 	}
 
@@ -87,18 +85,18 @@ class Coupon
 	{
 		$discounted_price = $basket->getTotalAmount();
 
-		if ($this->discount_type === self::DISCOUNT_TYPE_FIXED) {
+		if ($this->discount_type == CouponDiscountTypeEnum::FIXED) {
 			return $discounted_price - $this->discount;
-		} else if ($this->discount_type === self::DISCOUNT_TYPE_PERCENTAGE) {
-			return ($this->discount / 100) * $discounted_price;
+		} else if ($this->discount_type == CouponDiscountTypeEnum::PERCENTAGE) {
+			return $discounted_price - (($this->discount / 100) * $discounted_price);
 		}
 	}
 
 	public function isValid(Basket $basket)
 	{
 		if (
-			self::isTimeValid()
-			&& self::hasReachedUsagesLimit()
+			// self::isTimeValid() &&
+			self::hasReachedUsagesLimit()
 			&& ($basket->getTotalAmount() >= self::MINIMUM_AMOUNT)
 			&& ($this->is_revoked != false)
 		) {
@@ -113,9 +111,23 @@ class Coupon
 		return [new CouponUniqueCodeChanged($this, $unique_code)];
 	}
 
+	public function onSetUniqueCode()
+	{
+	}
+
 	public function getUniqueCode()
 	{
 		return $this->unique_code;
+	}
+
+	public function getDiscount()
+	{
+		return $this->discount;
+	}
+
+	public function getDiscountType()
+	{
+		return $this->discount_type;
 	}
 
 	public function revoke(): void

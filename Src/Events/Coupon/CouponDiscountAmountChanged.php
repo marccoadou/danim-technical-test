@@ -1,8 +1,8 @@
 <?php
 
-namespace Events\Coupon;
+namespace Src\Events\Coupon;
 
-use Classes\Coupon;
+use Src\Classes\Coupon;
 
 class CouponDiscountAmountChanged
 {

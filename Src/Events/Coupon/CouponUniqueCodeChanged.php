@@ -1,6 +1,8 @@
 <?php
 
-use Classes\Coupon;
+namespace Src\Events\Coupon;
+
+use Src\Classes\Coupon;
 
 class CouponUniqueCodeChanged
 {
