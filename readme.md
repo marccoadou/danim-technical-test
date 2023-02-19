@@ -7,3 +7,7 @@
 ## How to run tests
 
 > ./vendor/bin/phpunit --testdox tests
+
+## To debug
+
+> php test.php
