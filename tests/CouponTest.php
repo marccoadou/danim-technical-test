@@ -18,4 +18,22 @@ final class CouponTest extends TestCase
         $coupon = new Coupon(20, 0, 'COUPON123');
         $this->assertInstanceOf(Coupon::class, $coupon);
     }
+
+    public function testCanNotCreateACouponWithTooHighPercentage(): void
+    {
+        $this->expectExceptionMessage("Discount in PERCENTAGES should not be more than 75%");
+        new Coupon(85, 0, 'COUPON123');
+    }
+
+    public function testCanNotCreateCouponWithNullPercentage(): void
+    {
+        $this->expectExceptionMessage("Discount can not be negative or null");
+        new Coupon(0, 0, 'COUPON123');
+    }
+
+    public function testCanNotCreateCouponWithWrongDiscountType(): void
+    {
+        $this->expectExceptionMessage("Discount should be either PERCENTAGE or FIXED");
+        new Coupon(23, 3, 'COUPON123');
+    }
 }

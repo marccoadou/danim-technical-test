@@ -77,7 +77,7 @@ final class BasketTest extends TestCase
         $this->assertEquals(49.99, $basket->getFinalAmount());
     }
 
-    public function testBasketTotalAmountWithValidCoupon()
+    public function testBasketTotalAmountWithValidPercentageCoupon()
     {
         $commandBus = new SynchronousCommandBus();
         $basketRepository = new BasketRepository;
@@ -89,8 +89,39 @@ final class BasketTest extends TestCase
         $commandBus->execute($basket->addProduct(new Product(50)));
 
 
-        $coupon = new Coupon(20, 0, "COUPON_20_FIX");
+        $coupon = new Coupon(25, 0, "COUPON_25_FIX");
         $commandBus->execute($basket->addCouponToBasket($coupon));
-        $this->assertEquals(76, $basket->getFinalAmount());
+        $this->assertEquals(71.25, $basket->getFinalAmount());
+    }
+
+    public function testBasketTotalAmountWithValidFixedCoupon()
+    {
+        $commandBus = new SynchronousCommandBus();
+        $basketRepository = new BasketRepository;
+        $commandBus->register(CreateBasketCommand::class, new CreateBasketHandler($basketRepository));
+        $basket = $commandBus->execute(new CreateBasketCommand(new Product(20)));
+        $commandBus->register(AddCouponToBasketCommand::class, new AddCouponToBasketHandler($basket));
+        $commandBus->register(AddProductToBasketCommand::class, new AddProductToBasketHandler($basket->getProductRepository()));
+        $commandBus->execute($basket->addProduct(new Product(25)));
+        $commandBus->execute($basket->addProduct(new Product(50)));
+
+        $coupon = new Coupon(20, 1, "COUPON_20_FIX");
+        $commandBus->execute($basket->addCouponToBasket($coupon));
+        $this->assertEquals(75, $basket->getFinalAmount());
+    }
+
+    public function testInferiorBasketPriceWithCoupon()
+    {
+        $this->expectExceptionMessage("Invalid coupon for this basket");
+        $commandBus = new SynchronousCommandBus();
+        $basketRepository = new BasketRepository;
+        $commandBus->register(CreateBasketCommand::class, new CreateBasketHandler($basketRepository));
+        $basket = $commandBus->execute(new CreateBasketCommand(new Product(20)));
+        $commandBus->register(AddCouponToBasketCommand::class, new AddCouponToBasketHandler($basket));
+        $commandBus->register(AddProductToBasketCommand::class, new AddProductToBasketHandler($basket->getProductRepository()));
+        $commandBus->execute($basket->addProduct(new Product(25)));
+
+        $coupon = new Coupon(20, 1, "COUPON_20_FIX");
+        $commandBus->execute($basket->addCouponToBasket($coupon));
     }
 }

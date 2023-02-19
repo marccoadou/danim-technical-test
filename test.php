@@ -43,12 +43,8 @@ $commandBus->execute($basket->addProduct(new Product(50)));
 $coupon = new Coupon(20, 0, "COUPON_20_FIX");
 $commandBus->register(UseCouponOnBasketCommand::class, new UseCouponOnBasketHandler($coupon->getUsageRepository()));
 $commandBus->execute($basket->addCouponToBasket($coupon));
-echo "Total amount before discount : " .  $basket->getTotalAmount() . PHP_EOL;
-echo "Final amount after discount : " . $basket->getFinalAmount() . PHP_EOL;
+
+// $coupon->is_revoked = true;
 $commandBus->execute($basket->pay());
 
 print_r($coupon->getUsageRepository());
-
-
-// The idea here would be to get the ID from the command that creates the basket
-// use the ID in the different commands to modify this particular basket

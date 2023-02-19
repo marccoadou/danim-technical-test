@@ -74,7 +74,11 @@ class Basket
 
     public function addCouponToBasket(Coupon $coupon)
     {
-        return new AddCouponToBasketCommand($coupon);
+        if ($coupon->isValid($this)) {
+            return new AddCouponToBasketCommand($coupon);
+        } else {
+            throw new Exception("Invalid coupon for this basket");
+        }
     }
 
     public function pay()
@@ -93,13 +97,6 @@ class Basket
 
     public function getTotalAmountWithCouponReduction(): float
     {
-        print_r($this->coupon->isValid($this));
-        return 230;
-
-        // if ($this->coupon->isValid($this)) {
-        //     return $this->coupon->calculateDiscountedPriceForBasket($this);
-        // } else {
-        //     throw new Exception("Invalid coupon for this basket");
-        // }
+        return $this->coupon->calculateDiscountedPriceForBasket($this);
     }
 }

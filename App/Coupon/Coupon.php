@@ -8,6 +8,7 @@ use DateInterval;
 use App\Basket\Basket;
 use App\Coupon\CouponUsageRepository;
 use App\Coupon\Command\UseCouponOnBasketCommand;
+use PHPUnit\Event\Runtime\PHP;
 
 require_once('./App/Coupon/CouponUsageRepository.php');
 
@@ -21,11 +22,15 @@ class Coupon
 
     public function __construct(int $discount, int $discount_type, $unique_code)
     {
-        if ($discount < 0) {
+        if ($discount <= 0 || $discount > 100) {
             throw new \InvalidArgumentException("Discount can not be negative or null");
         }
         if (!in_array($discount_type, [self::DISCOUNT_TYPE_FIXED, self::DISCOUNT_TYPE_PERCENTAGE])) {
             throw new \InvalidArgumentException("Discount should be either PERCENTAGE or FIXED");
+        }
+
+        if ($discount_type === self::DISCOUNT_TYPE_PERCENTAGE && $discount > 75) {
+            throw new \InvalidArgumentException("Discount in PERCENTAGES should not be more than 75%");
         }
         $this->id = uniqid();
         $this->creation_date = new DateTime('now');
@@ -40,12 +45,11 @@ class Coupon
 
     public function use(Basket $basket)
     {
-        echo $this->isValid($basket);
-        // if ($this->isValid($basket)) {
-        //     return new UseCouponOnBasketCommand($this);
-        // } else {
-        //     throw new Exception("Coupon is invalid");
-        // }
+        if ($this->isValid($basket)) {
+            return new UseCouponOnBasketCommand($this);
+        } else {
+            throw new Exception("Coupon is invalid");
+        }
     }
 
     public function getUsageRepository(): CouponUsageRepository
@@ -60,7 +64,6 @@ class Coupon
 
     private function isTimeValid(): bool
     {
-
         if ($this->limit_date > new DateTime('now')) {
             return true;
         } else {
@@ -71,9 +74,9 @@ class Coupon
     private function hasNotReachedUsagesLimit(): bool
     {
         if (count($this->usageRepository->usages) > 9) {
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     public function calculateDiscountedPriceForBasket(Basket $basket): float
@@ -87,7 +90,7 @@ class Coupon
         }
     }
 
-    public function isValid(Basket $basket)
+    public function isValid(Basket $basket): bool
     {
         if (
             self::isTimeValid() &&
@@ -99,11 +102,6 @@ class Coupon
         } else {
             return false;
         }
-    }
-
-    public function setUniqueCode(string $unique_code)
-    {
-        // return [new CouponUniqueCodeChanged($this, $unique_code)];
     }
 
     public function getUniqueCode()
