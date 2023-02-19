@@ -4,6 +4,7 @@ namespace App\Basket;
 
 use App\Product\Product;
 use App\Product\ProductRepository;
+use App\Basket\Command\AddProductToBasketCommand;
 
 require('./App/Product/ProductRepository.php');
 
@@ -23,8 +24,7 @@ class Basket
 
     public function addProduct(Product $product): array
     {
-        return [];
-        // return [new AddProductToBasket($product)];
+        return [new AddProductToBasketCommand($product)];
     }
 
     // public function onBasketAddedProduct(BasketAddedProduct $event): void
@@ -54,7 +54,7 @@ class Basket
         return $this->id;
     }
 
-    public function getProducts()
+    public function getProductRepository()
     {
         return $this->products;
     }

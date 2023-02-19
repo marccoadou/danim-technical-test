@@ -16,19 +16,22 @@ use App\Command\SynchronousCommandBus;
 use App\Basket\Command\AddProductToBasket;
 use App\Basket\Command\CreateBasketCommand;
 use App\Basket\Handler\CreateBasketHandler;
+use App\Basket\Command\AddProductToBasketCommand;
 use App\Basket\Handler\AddProductToBasketHandler;
 
 $commandBus = new SynchronousCommandBus();
-
 
 $basketRepository = new BasketRepository;
 $productRepository = new ProductRepository;
 
 $commandBus->register(CreateBasketCommand::class, new CreateBasketHandler($basketRepository));
-$commandBus->register(AddProductToBasket::class, new AddProductToBasketHandler($productRepository));
 $basket = $commandBus->execute(new CreateBasketCommand(new Product(204.3)));
-$commandBus->execute(new AddProductToBasket(new Product(2233.2)));
-$commandBus->execute(new AddProductToBasket(new Product(123.2)));
+
+$commandBus->register(AddProductToBasketCommand::class, new AddProductToBasketHandler($basket->getProductRepository()));
+$commandBus->execute(new AddProductToBasketCommand(new Product(2233.2)));
+$commandBus->execute(new AddProductToBasketCommand(new Product(123.2)));
+
+print_r($basket);
 // $commandBus->execute(new CreateBasketCommand(new Product(24324.3)));
 // $commandBus->execute(new CreateBasketCommand(new Product(203322.3)));
 

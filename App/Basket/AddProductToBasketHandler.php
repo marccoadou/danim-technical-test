@@ -10,7 +10,7 @@ use App\Basket\Basket;
 use App\Command\CommandInterface;
 use App\Product\ProductRepository;
 use App\Command\CommandHandlerInterface;
-use App\Basket\Command\AddProductToBasket;
+use App\Basket\Command\AddProductToBasketCommand;
 
 class AddProductToBasketHandler implements CommandHandlerInterface
 {
@@ -23,7 +23,7 @@ class AddProductToBasketHandler implements CommandHandlerInterface
 
     public function handle(CommandInterface $command)
     {
-        if (!$command instanceof AddProductToBasket) {
+        if (!$command instanceof AddProductToBasketCommand) {
             throw new Exception("CreateBasketHandler can only handle CreateBasketCommand");
         }
 
