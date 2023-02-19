@@ -2,7 +2,6 @@
 
 namespace App\Product\Command;
 
-require('./App/Command/CommandInterface.php');
 
 
 use App\Command\CommandInterface;

@@ -2,52 +2,41 @@
 
 namespace App\Basket;
 
+use Exception;
+use App\Coupon\Coupon;
 use App\Product\Product;
 use App\Product\ProductRepository;
+use App\Basket\Command\AddCouponToBasketCommand;
+use App\Coupon\Command\UseCouponOnBasketCommand;
 use App\Basket\Command\AddProductToBasketCommand;
+use App\Basket\Command\RemoveProductFromBasketCommand;
 
-require('./App/Product/ProductRepository.php');
+require_once('./App/Product/ProductRepository.php');
+require_once('./App/Coupon/UseCouponOnBasketCommand.php');
 
 
 
 class Basket
 {
-    public $id, $total_amount, $products;
+    public $id, $total_amount, $productRepository, $coupon;
 
     public function __construct(Product $product)
     {
         $this->id = uniqid();
-        $this->products = new ProductRepository();
-        $this->products->save($product);
+        $this->productRepository = new ProductRepository();
+        $this->productRepository->save($product);
         $this->total_amount = 0;
     }
 
-    public function addProduct(Product $product): array
+    public function addProduct(Product $product)
     {
-        return [new AddProductToBasketCommand($product)];
+        return new AddProductToBasketCommand($product, $this->getProductRepository());
     }
 
-    // public function onBasketAddedProduct(BasketAddedProduct $event): void
-    // {
-    //     array_push($this->products, $event->getProduct());
-    //     $this->total_amount = self::calculateTotalAmount();
-    // }
-
-    // public function removeProduct(Product $product): array
-    // {
-    //     return [new BasketRemovedProduct($this, $product)];
-    // }
-
-    // public function onBasketRemovedProduct(BasketRemovedProduct $event): void
-    // {
-    //     $index = array_search($event->getProduct(), $this->products, true);
-    //     if ($index !== false) {
-    //         unset($this->products[$index]);
-    //         $this->total_amount = self::calculateTotalAmount();
-    //     } else {
-    //         throw new Exception("Can not remove an item that's not in the basket");
-    //     }
-    // }
+    public function removeProduct(Product $product)
+    {
+        return new RemoveProductFromBasketCommand($product->id);
+    }
 
     public function getId()
     {
@@ -56,12 +45,26 @@ class Basket
 
     public function getProductRepository()
     {
-        return $this->products;
+        return $this->productRepository;
+    }
+
+    public function getProducts()
+    {
+        return $this->productRepository->products;
+    }
+
+    public function getFinalAmount(): float
+    {
+        if ($this->coupon instanceof Coupon) {
+            return $this->getTotalAmountWithCouponReduction();
+        } else {
+            return $this->calculateTotalAmount();
+        }
     }
 
     public function getTotalAmount(): float
     {
-        return $this->total_amount;
+        return $this->calculateTotalAmount();
     }
 
     public function setTotalAmount(float $total_amount): void
@@ -69,21 +72,34 @@ class Basket
         $this->total_amount = $total_amount;
     }
 
+    public function addCouponToBasket(Coupon $coupon)
+    {
+        return new AddCouponToBasketCommand($coupon);
+    }
+
+    public function pay()
+    {
+        return new UseCouponOnBasketCommand($this->coupon);
+    }
+
     private function calculateTotalAmount(): float
     {
         $total_amount = 0;
-        foreach ($this->products as $product) {
+        foreach ($this->productRepository->products as $product) {
             $total_amount += $product->getPrice();
         }
         return $total_amount;
     }
 
-    // public function getTotalAmountWithCouponReduction(Coupon $coupon): float
-    // {
-    //     if ($coupon->isValid($this)) {
-    //         return $coupon->calculateDiscountForBasket($this);
-    //     } else {
-    //         throw new Exception("Invalid coupon for this basket");
-    //     }
-    // }
+    public function getTotalAmountWithCouponReduction(): float
+    {
+        print_r($this->coupon->isValid($this));
+        return 230;
+
+        // if ($this->coupon->isValid($this)) {
+        //     return $this->coupon->calculateDiscountedPriceForBasket($this);
+        // } else {
+        //     throw new Exception("Invalid coupon for this basket");
+        // }
+    }
 }

@@ -27,5 +27,6 @@ class CreateProductHandler implements CommandHandlerInterface
 
         $product = new Product($command->getPrice());
         $this->productRepository->save($product);
+        return $product;
     }
 }

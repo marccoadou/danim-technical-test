@@ -2,7 +2,7 @@
 
 namespace App\Basket\Handler;
 
-require('./App/Command/CommandHandlerInterface.php');
+require_once('./App/Command/CommandHandlerInterface.php');
 
 
 use Exception;

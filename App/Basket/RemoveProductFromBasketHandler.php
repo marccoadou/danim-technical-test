@@ -4,15 +4,13 @@ namespace App\Basket\Handler;
 
 require_once('./App/Command/CommandHandlerInterface.php');
 
-
+use App\Basket\Command\RemoveProductFromBasketCommand;
 use Exception;
-use App\Basket\Basket;
 use App\Command\CommandInterface;
 use App\Product\ProductRepository;
 use App\Command\CommandHandlerInterface;
-use App\Basket\Command\AddProductToBasketCommand;
 
-class AddProductToBasketHandler implements CommandHandlerInterface
+class RemoveProductFromBasketHandler implements CommandHandlerInterface
 {
     private $productRepository;
 
@@ -23,11 +21,10 @@ class AddProductToBasketHandler implements CommandHandlerInterface
 
     public function handle(CommandInterface $command)
     {
-        if (!$command instanceof AddProductToBasketCommand) {
-            throw new Exception("AddProductToBasketHandler can only handle AddProductToBasketCommand");
+        if (!$command instanceof RemoveProductFromBasketCommand) {
+            throw new Exception("CreateBasketHandler can only handle CreateBasketCommand");
         }
 
-        $this->productRepository->save($command->getProduct());
-        return $command->getProduct()->id;
+        $this->productRepository->remove($command->getId());
     }
 }

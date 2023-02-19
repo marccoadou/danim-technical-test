@@ -2,7 +2,7 @@
 
 namespace App\Product;
 
-require('./App/Product/ProductRepositoryInterface.php');
+require_once('./App/Product/ProductRepositoryInterface.php');
 
 
 use App\Product\Product;
@@ -15,11 +15,19 @@ class ProductRepository implements ProductRepositoryInterface
     public function save(Product $product)
     {
         $this->products[$product->id] = $product;
-        print_r($this->products);
     }
 
     public function find(string $id): ?Product
     {
         return $this->products[$id] ?? null;
+    }
+
+    public function remove(string $id): bool
+    {
+        if (isset($this->products[$id])) {
+            unset($this->products[$id]);
+            return true;
+        }
+        return false;
     }
 }

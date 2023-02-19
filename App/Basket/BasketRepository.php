@@ -2,7 +2,7 @@
 
 namespace App\Basket;
 
-require('./App/Basket/BasketRepositoryInterface.php');
+require_once('./App/Basket/BasketRepositoryInterface.php');
 
 use App\Basket\Basket;
 

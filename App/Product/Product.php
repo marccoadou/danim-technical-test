@@ -6,20 +6,15 @@ class Product
 {
     public $id, $price;
 
-    public function __construct(float $price)
+    public function __construct(float|int $price)
     {
         $this->id = uniqid();
-        $this->price = $price;
+        $this->price = floatval($price);
     }
 
     // public function setPrice(float $price): array
     // {
     //     // return [new ProductChangedPrice($this, $price)];
-    // }
-
-    // public function onProductChangedPrice(ProductChangedPrice $event)
-    // {
-    //     $this->price = $event->getPrice();
     // }
 
     public function getPrice(): float
