@@ -1,6 +1,6 @@
-#Danim Technical Test
+# Danim Technical Test
 
-##How to install
+## How to install
 
 > composer install; composer dump-autoload;
 
